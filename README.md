@@ -4,7 +4,7 @@ This repository hosts all the hacks from the 2018 hackAuton event!
 
 ## How to Submit
 
-Submitting your hack is easy, follow these three steps:
+Submitting your hack is easy, follow these steps:
 
 1. One person from your team should sign up for a Github account if you don't already have one. You will need it to submit your code.
 2. Visit the [hackAuton repository on Github](https://github.com/autonlab/2018.hackAuton) and, on the top right, click "Fork" to make a new copy of the repository to your account.
