@@ -19,4 +19,4 @@ Submitting your hack is easy, follow these steps:
     git commit -am "Added code and license for team Your Team Name"
     git push
     ```
-6. You're not done yet. Your code is in your Github fork but not in Auton Lab's repository. Visit your fork on Github (https://github.com/your_username/2018.hackAuton). On the top left, just above the file list, there is a button labeled "New pull request". Click that button and you should see all of your additions and an indication that the pull request is going to our repository. Once you create the pull request you're done! We will review your submission and add it to the official repository.
+6. You're almost done! Your code is in your Github fork but not in Auton Lab's repository. Visit your fork on Github (https://github.com/your_username/2018.hackAuton). On the top left, just above the file list, there is a button labeled "New pull request". Click that button and you should see all of your additions and an indication that the pull request is going to our repository. Once you create the pull request you're done! We will review your submission and add it to the official repository.
