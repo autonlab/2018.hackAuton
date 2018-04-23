@@ -1,0 +1,89 @@
+\begin{thebibliography}{9}
+\providecommand{\natexlab}[1]{#1}
+\providecommand{\url}[1]{\texttt{#1}}
+\expandafter\ifx\csname urlstyle\endcsname\relax
+  \providecommand{\doi}[1]{doi: #1}\else
+  \providecommand{\doi}{doi: \begingroup \urlstyle{rm}\Url}\fi
+
+\bibitem[{Alan Agresti}(2003)]{Agresti2003}
+{Alan Agresti}.
+\newblock Logistic regression.
+\newblock In \emph{Categorical Data Analysis}, chapter~5, pages 165--210.
+  Wiley-Blackwell, 2003.
+\newblock ISBN 9780471249689.
+\newblock \doi{10.1002/0471249688.ch5}.
+\newblock URL
+  \url{https://onlinelibrary.wiley.com/doi/abs/10.1002/0471249688.ch5}.
+
+\bibitem[Battifarano(2018)]{2018HackAuton}
+DeSmet D. Madabhushi A. Nabar~P. Battifarano, M.
+\newblock Predicting future machine failure from machine state using logistic
+  regression.
+\newblock \url{https://github.com/mbattifarano/2018.hackAuton}, 2018.
+
+\bibitem[Cortes and Vapnik(1995)]{Cortes1995}
+Corinna Cortes and Vladimir Vapnik.
+\newblock Support-vector networks.
+\newblock \emph{Machine Learning}, 20\penalty0 (3):\penalty0 273--297, Sep
+  1995.
+\newblock ISSN 1573-0565.
+\newblock \doi{10.1007/BF00994018}.
+\newblock URL \url{https://doi.org/10.1007/BF00994018}.
+
+\bibitem[IBM()]{IBM-machinefailure}
+IBM.
+\newblock Are your preventive maintenance efforts wrenching away precious time
+  and resources?
+\newblock URL
+  \url{https://www.ibm.com/blogs/internet-of-things/wp-content/uploads/2016/05/IG_preventiveMaintenance15_ss.pdf}.
+
+\bibitem[Kluyver et~al.(2016)Kluyver, Ragan-kelley, P{\'{e}}rez, Granger,
+  Bussonnier, Frederic, Kelley, Hamrick, Grout, Corlay, Ivanov, Avila, Abdalla,
+  and Willing]{Kluyver2016}
+Thomas Kluyver, Benjamin Ragan-kelley, Fernando P{\'{e}}rez, Brian Granger,
+  Matthias Bussonnier, Jonathan Frederic, Kyle Kelley, Jessica Hamrick, Jason
+  Grout, Sylvain Corlay, Paul Ivanov, Dami{\'{a}}n Avila, Safia Abdalla, and
+  Carol Willing.
+\newblock {Jupyter Notebooks—a publishing format for reproducible
+  computational workflows}.
+\newblock \emph{Positioning and Power in Academic Publishing: Players, Agents
+  and Agendas}, pages 87--90, 2016.
+\newblock ISSN 0015-0193.
+\newblock \doi{10.3233/978-1-61499-649-1-87}.
+
+\bibitem[Murray et~al.(2005)Murray, Hughes, and Kreutz-Delgado]{Murray2005}
+Joseph~F Murray, Gordon~F Hughes, and Kenneth Kreutz-Delgado.
+\newblock {Machine Learning Methods for Predicting Failures in Hard Drives: A
+  Multiple-Instance Application}.
+\newblock \emph{J. Mach. Learn. Res.}, 6:\penalty0 783--816, 2005.
+\newblock ISSN 1532-4435.
+\newblock \doi{10.1.1.84.9557}.
+\newblock URL
+  \url{http://jmlr.csail.mit.edu/papers/volume6/murray05a/murray05a.pdf
+  http://dl.acm.org/citation.cfm?id=1046920.1088699}.
+
+\bibitem[Pedregosa et~al.(2011)Pedregosa, Varoquaux, Gramfort, Michel, Thirion,
+  Grisel, Blondel, Prettenhofer, Weiss, Dubourg, Vanderplas, Passos,
+  Cournapeau, Brucher, Perrot, and Duchesnay]{scikit-learn}
+F.~Pedregosa, G.~Varoquaux, A.~Gramfort, V.~Michel, B.~Thirion, O.~Grisel,
+  M.~Blondel, P.~Prettenhofer, R.~Weiss, V.~Dubourg, J.~Vanderplas, A.~Passos,
+  D.~Cournapeau, M.~Brucher, M.~Perrot, and E.~Duchesnay.
+\newblock Scikit-learn: Machine learning in {P}ython.
+\newblock \emph{Journal of Machine Learning Research}, 12:\penalty0 2825--2830,
+  2011.
+
+\bibitem[Shalizi(2012)]{Shalizi2012}
+Cosma~Rohilla Shalizi.
+\newblock {Logistic Regression}.
+\newblock In \emph{{Advanced Data Analysis from an Elementary Point of View}},
+  chapter {12 Logistic Regression}. Cambridge University Press, 2012.
+
+\bibitem[Turnbull and Alldrin(2003)]{Turnbull2003}
+Doug Turnbull and Neil Alldrin.
+\newblock {Failure prediction in hardware systems}.
+\newblock Technical report, 2003.
+\newblock URL
+  \url{https://cseweb.ucsd.edu/{~}dturnbul/Papers/ServerPrediction.pdf
+  http://cseweb.ucsd.edu/{~}dturnbul/Papers/ServerPrediction.pdf}.
+
+\end{thebibliography}
