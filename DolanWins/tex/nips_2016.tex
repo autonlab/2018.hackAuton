@@ -1,0 +1,375 @@
+\documentclass{article}
+
+% if you need to pass options to natbib, use, e.g.:
+% \PassOptionsToPackage{numbers, compress}{natbib}
+% before loading nips_2016
+%
+% to avoid loading the natbib package, add option nonatbib:
+% \usepackage[nonatbib]{nips_2016}
+
+\usepackage{natbib}
+% \setlength{\bibsep}{0.0pt}
+
+%\usepackage{nips_2016}
+
+% to compile a camera-ready version, add the [final] option, e.g.:
+\usepackage[final]{nips_2016}
+
+\usepackage[utf8]{inputenc} % allow utf-8 input
+\usepackage[T1]{fontenc}    % use 8-bit T1 fonts
+\usepackage{hyperref}       % hyperlinks
+\usepackage{url}            % simple URL typesetting
+\usepackage{booktabs}       % professional-quality tables
+\usepackage{amsfonts}       % blackboard math symbols
+\usepackage{nicefrac}       % compact symbols for 1/2, etc.
+\usepackage{microtype}      % microtypography
+
+\usepackage{comment}
+\usepackage{amsmath}
+\usepackage{float}
+\usepackage{graphics}
+\usepackage{graphicx}
+\usepackage[font=small,labelfont=bf]{caption}
+\usepackage{subcaption}
+\usepackage[title]{appendix}
+\usepackage{multicol}
+\usepackage{verbatim}
+\usepackage{fancyvrb}
+
+\title{Adapted Performance Assessment For Drivers Through Behavioral Advantage}
+
+\author{
+  Dicong Qiu\thanks{\url{http://cs.cmu.edu/\~dq}} \\
+  Robotics Institute\\
+  Carnegie Mellon University\\
+  Pittsburgh, PA 15213 \\
+  \texttt{dq@cs.cmu.edu} \\
+  \And
+  Karthik Paga\\
+  Robotics Institute\\
+  Carnegie Mellon University\\
+  Pittsburgh, PA 15213 \\
+  \texttt{kpaga@cs.cmu.edu} \\
+}
+
+\begin{document}
+
+\maketitle
+
+\begin{abstract}
+    The potential positive impact of autonomous driving and driver assistance technologies have been a major impetus over the last decade. On the flip side, it has been a challenging problem to analyze the performance of human drivers or autonomous driving agents quantitatively. In this work, we propose a generic method that compares the performance of drivers or autonomous driving agents even if the environmental conditions are different, by using the driver behavioral advantage instead of absolute metrics, which efficiently removes the environmental factors. A concrete application of the method is also presented, where the performance of more than 100 truck drivers was evaluated and ranked in terms of fuel efficiency, covering more than 90,000 trips spanning an average of 300 miles in a variety of driving conditions and environments.
+\end{abstract}
+
+% refs:
+%   - code submission: https://github.com/autonlab/2018.hackAuton
+
+
+\section{Introduction}\label{sec:introduction}
+
+\begin{comment}
+
+Resources:
+https://www.forbes.com/sites/bernardmarr/2017/11/06/the-future-of-the-transport-industry-iot-big-data-ai-and-autonomous-vehicles/#73ba91ea1137
+
+https://www.theguardian.com/technology/2016/jun/17/self-driving-trucks-impact-on-drivers-jobs-us
+
+TODO:
+
+1, what is the problem? (how to evaluate drivers or autonomous driving agents)
+
+2. broad overview of the current technology breakthroughs
+
+3, why difficult? (the influence of environmental conditions, and it is hard/inefficient to collect data in the same conditions for driver evaluation. Sometimes it is even impossible. e.g. You cannot expect a driver to come to your lab and do a bunch of test to evaluate their driving skills. And dedicated tests are hard to reveal driver habits and true/usual performance. e.g. you will get prepared for an exam)
+
+4, so it is necessary to find a way to evaluate drivers/autonomous driving agents' performance according to all trips they have driven so far, and remove any environmental bias.
+
+\end{comment}
+
+Over the last decade, the potential of autonomous driving and driver assistance technologies have been recognized by both the industry and the academia \cite{paden2016survey}. The impact of automation in the trucking industry has been often characterized to supersede the traditional human driving capabilities especially in relation with the economic viability of deploying autonomous driving agents at-scale \cite{costello2017truck}.
+
+While the future for these technologies seems promising, quantitative evaluation tools to measure associated economic impact are in need. A direct qualitative comparison often falls short of only accounting for the end-end history of any given trip. Traditional evaluation strategies in a simulated or controlled environment are inefficient not only for assessing the driver or driving agent overall performance in various environments \cite{jeong2006functional, lappi2015racer} but also for revealing the individual advantage in different driving conditions that varies from one driver to another. The need for evaluating the operational efficiency of a driver or a driving agent in the then-prevailing driving conditions (within or across trips) and the associated uncertainty in correlation with control test results necessitates the need for a fair ranking methodology for quantitatively determining a driver's advantage over another while accounting for the external operating conditions. While it is intractable to exhaustively account for every factor related to the driving condition, we propose a functional approximation by analyzing the operational outcome of driven trips.
+
+In the example application of the proposed method on truck driver performance assessment, we analyzed more than 90,000 trips spanning an average of 300 miles per trip while ferrying weighted average payloads of approximately 43,000 pounds. In addition, the proposed regression model combines the dynamic impact of the terrain, driving conditions including comfort and impact of the driver's training and experience on the vehicle performance and the economy of the trip. Much attributed to our sponsors generosity, our non-linear regression model is a collective approximation of more than 200 freight drivers with varying levels of experience and expertise. Nonetheless, the proposed driver evaluation system is agnostic to the driver and instead relies on the vehicle's response to control, operating characteristics and several other external conditions. We support our predictions by comparing against untrained economic characteristics of each of the trips.
+
+While modelling the dynamics involved in driver's training and experience are highly susceptible to failure and stagnation, we believe that the adaptable function approximation capabilities of non-linear regression models is an advantage. Furthermore, we also proffer that the longevity of the activities involved in hauling or shipping operations and the historical end to end documentation make this study an attractive economic predictor for ground transportation going forward. In accordance with the generally prevalent persistent safety of autonomous and assisted driving technologies or the expected maturity over the next 5 to 10 years, we analyze freight shipment activities in this work not only to propose a metric for assisting the roadways-freight industry but also as a evaluation for advanced and economically competitive autonomous driving systems.
+
+
+\section{Feature Extraction and Normalization}\label{sec:feature_extraction_and_normalization}
+
+% 1, pre-processing: conversion to feature space and normalization
+
+To better assess the performance of a driver and compare that to the performance of other drivers, it is necessary to analyze multiple trips by the drivers. Different levels of information can be extracted from a trip to represent the characteristics of it. The problem raised is related to the granularity or level of abstraction of informative features that are necessary and sufficient representative of the trip. In our approach, we utilize the generally available abstract information or characteristics that collectively describe the economy of a trip. These summaries, which collectively represent the trip, consist of four parts: the \textbf{identifier} information, the \textbf{environmental} (objective) characteristics, the \textbf{driver behavioral} (subjective) characteristics and the driver \textbf{performance} evaluation. More specifically,
+
+% The problem raised is how granular or abstract the information level of a trip shall be to represent the trip.
+\begin{itemize}
+    
+    \item identifier information $ c_{i} \in \mathcal{C} $ includes identifiers that distinguish the trip, the driver and the vehicle driven, along with information that is not used for data analytics;
+    
+    \item environmental characteristics $ s_{i} \in \mathcal{S} $ summarizes the driving conditions of the trip that are not controllable by the driver or the driving agent, including average loading, vehicle characteristics, terrain features, etc.;
+    
+    \item driver behavioral characteristics $ a_{i} \in \mathcal{A} $ describes driver controllable factors of the trip, including information like \textit{the number of times that engine running over rpm threshold}, \textit{accumulative time that vehicle is running over a higher speed limit}, etc.;
+    
+    \item driver performance $ q_{i} \in \mathcal{Q} $ at a trip is evaluated by quantifiable measurements that matter in the assessment, such as \textit{total fuel consumed for the trip}, \textit{accumulative driving time for this trip}, \textit{miles per gallon over the entire trip}, etc.
+    
+\end{itemize}
+
+Data normalization is then applied to efficiently avoid the effect of scale and different units, which can facilitate the training process of the models in the following steps. The data are centered and brought to the same scale by multiplying the inverse standard deviation for each dimension. It is assumed that each dimension of the data is uncorrelated to the other dimensions. The $d$-th dimension of a data sample $ x_{i} = \begin{bmatrix} s_{i}^{\mathsf{T}} & a_{i}^{\mathsf{T}} & q_{i}^{\mathsf{T}} \end{bmatrix}^{\mathsf{T}} $ after normalization becomes 
+
+\[
+\tilde{x}_{i}(d) = \frac{ x_{i}(d) - \bar{x}(d) }{ \sqrt{\Sigma(d,d)} }
+\]
+
+where 
+
+\[
+\bar{x} = \frac{1}{N} \sum_{i=1}^{N} x_{i} 
+\text{ and } 
+\Sigma = X^{\mathsf{T}} X
+\]
+
+represent the mean and covariance of the data set, respectively. $ x_{i} \in \mathcal{X} $ is the $i$-th data sample, $ X $ represents the stacked data samples of the entire data set $ \mathcal{X} $ with $ N = |\mathcal{X}| $ samples in total, $ x(d) $ is the $d$-th dimension of a data sample $ x $ and $ \Sigma(s,t) $ is the element at the $s$-th row and $t$-th column in the covariance matrix $ \Sigma $.
+
+
+\section{General Performance Assessment}\label{sec:general_performance_assessment}
+
+% 2, baseline model (using env + mpg)
+% 2.1, non-linear function approximator as an averager
+% 2.2, environmental baseline model
+% 2.3, incorporating uncertainty (e.g. Akihiko's error-NN, gaussian process like method?)
+% 2.4, removing environmental influence by baseline
+
+The primary challenge in assessing driver or driving agent performance lies in the situation that evaluations under strictly identical environment are hardly accessible, and it is unfeasible to evaluate drivers or driving agents in all possible environments in which they may drive vehicles to evaluate their general performance across different driving conditions.
+
+
+\subsection{Baseline Model for Environmental Factors}\label{sec:baseline_model}
+
+In order to remove the influence of the environmental factors from evaluations, we propose a baseline model for environmental factors, which is a concept borrowed from reinforcement learning and has been used to remove state bias efficiently \cite{wang2015dueling}. In reinforcement learning problems, evaluating the effect of taking an action $ a \in \mathcal{A} $ at a state $ s \in \mathcal{S} $ is equivalent to solving for the state-action value function $ Q: \mathcal{S} \times \mathcal{A} \rightarrow \mathbb{R} $. To properly normalize the effect of taking an action, it is more interested in the relative advantage brought by an action instead of the absolute value brought by it, which leads to the action advantage function
+
+\[
+A(s, a) \doteq Q(s, a) - B(s) \doteq Q(s, a) - V(s)
+\]
+
+where $ B: \mathcal{S} \rightarrow \mathbb{R} $ is the baseline function, $ V: \mathcal{S} \rightarrow \mathbb{R} $ is the state value function that evaluates the absolute value of being at a state $ s $ and is chosen to be the baseline, and the action advantage function $ A: \mathcal{S} \times \mathcal{A} \rightarrow \mathbb{R} $ measures the relative advantage of taking an action $ a $ at state $ s $.
+
+In analogy to the aforementioned method \cite{baird1993advantage} which dates back to 1993, our approach resembles an one-step Markov Decision Process (MDP) by considering a driver or driving agent selection problem, where the environmental conditions to drive a vehicle are formulated as a state $ s \in \mathcal{S} $, the behavioral characteristics of the driver or the driving agent in that trip is the action $ a \in \mathcal{A} $, and the performance $ q \in \mathcal{Q} $, or says, the value brought by the trip is the value in the MDP context. The state set $ \mathcal{S} $ contains all possible environmental factors and the action set $ \mathcal{A} $ contains all possible behavioral characteristics of drivers or driving agents. The difference is that the value becomes a multi-dimensional performance vector. And the value $ q \in \mathcal{Q} $ incorporating both the environmental factors and driver behavioral characteristics has been given.
+
+Since there is no indication that the environmental factors are linearly related to the performance evaluation, it is necessary to use a non-linear function approximator to approximate the environmental factor influence, playing the role as a conditional averager that characterizes the general performance over drivers or driving agents conditioned on specific environmental factors.
+
+\[
+B(s) \doteq V(s) = \frac{1}{ |\mathcal{A}| } \sum_{a \in \mathcal{A}} Q(s, a)
+\]
+
+In our approach, the baseline function is approximated by a neural network $ V_{\theta} $ parameterized with $ \theta $, which has $ 3 $ fully connected ReLU layers followed by a linear output layer. The input to the neural network is the environmental characteristics $ s $ and the output is the performance evaluation $ v $. Unlike usual applications of neural networks, the caveat of avoiding overfitting does not hold in this context, because the neural network is used to as a conditional averager that characterizes the general performance over all drivers or driving agents, overfitting is actually a beneficial property. $ V_{\theta} $ can also be replaced with more advanced neural network architecture \cite{yamaguchi2016neural} to model noise and uncertainty while averaging the environmental effect.
+
+
+\subsection{Removing Environment Bias by Baseline}\label{sec:removing_environment_bias}
+
+With the baseline model $ V_{\theta} $ summarizing the general performance over all drivers or driving agents conditioned on environmental characteristics, the advantage of a driver in a particular trip can be derived as
+
+\[
+p_{i} = A(s_{i}, a_{i}) \approx Q(s_{i}, a_{i}) - V_{\theta}(s_{i}) = q_{i} - V_{\theta}(s_{i})
+\]
+
+where for the $i$-th trip, $ s_{i} $ is the environmental characteristics, $ a_{i} $ is the driver behavioral characteristics, $ q_{i} $ is the performance evaluation, and $ p_{i} $ is the advantage of the driver or driving agent with behavioral characteristics $ a_{i} $.
+
+A naive version of driver performance assessment can be derived with performance advantage. Under the assumption that each driver or driving agent has driven sufficient number of trips that cover most of the driving conditions (environmental characteristics), the expected unbiased performance of the $k$-th driver can be approximated by the empirical average unbiased performance.
+
+\[
+\mathbb{E}(\bar{p}_{k}) \approx \frac{1}{ | \mathcal{I}_{k} | } \sum_{ i \in \mathcal{I}_{k} } p_{i} = \frac{1}{ | \mathcal{I}_{k} | } \sum_{ i \in \mathcal{I}_{k} } \left( q_{i} - V_{\theta}(s_{i}) \right)
+\]
+
+where $ \mathcal{I}_{k} $ is the set of all possible data sample entry indices related to the $k$-th driver, and the absolute value of the trip $ q_{i} \in \mathcal{Q} $ and the environmental characteristics $ s_{i} $ have been given. Applying the above approximation to all drivers or driving agents will lead to an unbiased evaluation of them, which is not affected by the environmental factors. The difference among the expected unbiased performance of the drivers determines their general rankings, which reflect the general performance assessment of these drivers or driving agents.
+
+
+\section{Incorporating Driver Behavioral Characteristics}\label{sec:incorporating_driver_behavioral_characteristics}
+
+% 3, direct model for driver behavioral features for new drivers (using env + drv + mpg)
+% 4, using env model from 2 and drv model from 3 to get a direct behavioral advantage model
+% 5, knows which driver shall drive in which kind of roads
+% (can think about how to organize this section into 4 parts: the pre-processing part, the pure environmental baseline, the direct advantage with characteristics model, and the optimal placement)
+
+One step beyond assessing the general performance of drivers or driving agents is to address the optimal driver placement problem, where it is interesting to understand which driver or driving agent is more suitable to drive a trip in which kind of environment (driving conditions). In order to achieve this goal, it is necessary to incorporate driver behavioral characteristics.
+
+
+\subsection{Behavioral Characteristics Model for Drivers}\label{sec:behavior_model}
+
+Similar to the formulation of the baseline model proposed in section \ref{sec:baseline_model}, a behavioral characteristics (behavior) model $ Q_{\phi} $ parameterized by $ \phi $ is proposed, which also serves to estimate the performance evaluation. But unlike the baseline model, which only takes environmental factors into account, the behavior model considers the effect from both the environmental factors and the driver or driving agent behavioral characteristics. The behavior model actually approximates the state-action value function.
+
+\[
+Q(s, a) \approx Q_{\phi}(s, a)
+\]
+
+where $ Q $ is the state-action value function and $ Q_{\phi} $ is the parameterized model. The purpose of this model is to abstract the effect on the performance evaluation introduced by certain behaviors characterized by their behavioral characteristics $ a $, conditioned on specific environments characterized by the environmental characteristics $ s $.
+
+In our approach, the behavior model is a parameterized neural network consisting of $ 3 $ fully connected ReLU layers followed by a linear output layer. The input to the neural network is the environmental characteristics $ s $ and the behavioral characteristics $ a $, and the output is the performance evaluation $ q $ incorporating both the environmental and driver behavioral factors. Similarly, overfitting is also a beneficial property here. And more advanced neural network architecture \cite{yamaguchi2016neural} can be adopted to replace the neural network mentioned above so as to model noise and uncertainty as well.
+
+
+\subsection{Direct Behavioral Advantage}\label{sec:direct_behavioral_advantage}
+
+With the baseline model $ V_{\theta} $ from section \ref{sec:baseline_model} and the behavioral characteristics model $ Q_{\phi} $ from section \ref{sec:behavior_model} properly constructed and trained, they can jointly approximate the driver behavioral advantage conditioned on specific environmental characteristics. For the sake of simplicity, the combination of the baseline model and the behavior model is represented by a joint direct behavioral advantage model with parameter $ \Theta = \{ \theta, \phi \} $.
+
+\[
+A(s, a) \approx A_{\Theta}(s, a) \doteq Q_{\phi}(s, a) - V_{\theta}(s)
+\]
+
+The architecture of the direct behavioral advantage model in our approach is a joint neural network consisting of the baseline model network and the behavior model network as shown below in figure \ref{fig:advantage_network}. The architectural details of the two sub networks follow the design in sections \ref{sec:baseline_model} and \ref{sec:behavior_model}.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.6\linewidth]{figures/advantage_network.png}
+    \caption{architecture of the direct behavioral advantage network, where both the baseline model sub network $ V_{\theta} $ and the behavior model sub network $ Q_{\phi} $ consist respectively of $ 3 $ fully connected ReLU layers followed by a linear output layer, the environmental characteristics input $ s \in \mathcal{S} $ goes into both sub networks $ V_{\theta} $ and $ Q_{\phi} $, the driver behavioral characteristics input $ a \in \mathcal{A} $ goes only into the behavior model sub network $ Q_{\phi} $, and the state-action performance is then subtracted by the baseline performance to produce the behavioral advantage $ A_{\Theta}(s, a) = Q_{\phi}(s, a) - V_{\theta}(s) $.}
+    \label{fig:advantage_network}
+\end{figure}
+
+
+\subsection{Optimal Driver Placement}\label{sec:optimal_driver_placement}
+
+Beyond assessing driver general performance across all kinds of environments, it is more efficient to assign an appropriate driver or driving agent to the trips with environmental characteristics that fits the driver or the driving agent. The problem of optimal driver placement is to find the driver or driving agent that generates the most value or drives most efficiently in the trip. Formally, the optimal placement is the driver behavioral characteristics $ a^{*} $ that yields the highest value in a specific environment characterized by $ s $.
+
+\[
+\begin{split}
+    a^{*} = \pi^{*}(s) 
+    &\doteq \arg\max_{a \in \mathcal{A}} Q(s, a) \\
+    &= \arg\max_{a \in \mathcal{A}} \left[ Q(s, a) - V(s) \right] \\
+    &= \arg\max_{a \in \mathcal{A}} A(s, a)
+\end{split}
+\]
+
+where $ \pi^{*} $ is the optimal policy that chooses the most suitable driver behavioral characteristics $ a^{*} $ conditioned on environmental characteristics $ s $. Note that in this context the outputs are one-dimensional for the state-action value function $ Q $, the state value function $ V $ and the advantage function $ A $, which is the dimension of performance evaluation that matters the most. And from the above derivation, the optimal driver placement can be formulated as an optimization problem of the driver behavioral characteristics over the direct behavioral advantage network in practice.
+
+\[
+\tilde{a}^{*} = \arg\max_{a \in \mathcal{A}} A_{\Theta}(s, a)
+\]
+
+The search strategy for the optima $ a^{*} $ can be gradient descent with multiple starts, or gradient-free methods such as CMA-ES \cite{hansen2001completely} which also has the potential for global optimization \cite{hansen2004evaluating, auger2005restart, auger2005performance, hansen2009benchmarking}. Although the parameterized direct behavioral advantage network $ A_{\Theta} $ is an approximation to the true advantage function, with the assumption of smooth continuity, the optimized driver behavioral characteristics $ \tilde{a}^{*} $ over $ A_{\Theta} $ shall approximate $ a^{*} $.
+
+
+\section{Experiments}\label{sec:experiments}
+
+\begin{comment}
+
+TODO (direct behavioral prediction):
+
+1, separate the dataset to training and testing datasets
+
+2, train using env + drv --> score
+
+3, compare on test data set the score (use the same normalization parameters)
+
+
+TODO (evaluation):
+
+1, find metrics to evaluated the proposed method (or actually, there is no good metrics to test the model. The model is more like a heuristics.)
+
+2, rank and test (comparison with other methods? e.g. SVM / classification?)
+
+3, conclusion
+
+\end{comment}
+
+The presented methods to assess the general performance of drivers or driving agents and solve the optimal driver placement problem are applied to a truck driving data set of $ 92273 $ freight trips. A baseline model as proposed in section \ref{sec:baseline_model} was trained in a supervised manner for $ 100 $ epochs with the environmental characteristics data as input and the performance evaluation data as output. Similarly, a behavior model mentioned in section \ref{sec:behavior_model} was also trained for $ 100 $ epochs with both the environmental characteristics data and the driver behavioral characteristics data jointly as input and the performance evaluation data as output. The training processes of the two aforementioned parameterized models are shown in figure \ref{fig:training_models}. After the training, the baseline model and the behavior model reached a mean squared error (MSE) loss of $ 0.145018 $ and $ 0.122050 $, respectively.
+
+\begin{figure}[H]
+    \centering
+    \begin{subfigure}{0.45\textwidth}
+        \centering
+        \includegraphics[width=\linewidth]{figures/training_value_model.png}
+        \caption{learning curve of baseline network $ V_{\theta} $}
+        \label{fig:training_value_model}
+    \end{subfigure}
+    \begin{subfigure}{0.45\textwidth}
+        \centering
+        \includegraphics[width=\linewidth]{figures/training_behavior_model.png}
+        \caption{learning curve of behavior network $ Q_{\phi} $}
+        \label{fig:training_behavior_model}
+    \end{subfigure}
+    \caption{the training processes (learning curves) in $ 100 $ training epochs of the baseline model network $ V_{\theta} $ described in section \ref{sec:baseline_model} and the behavior model network $ Q_{\phi} $ described in section \ref{sec:direct_behavioral_advantage}, after which they reached an MSE loss of $ 0.145018 $ and $ 0.122050 $, respectively.}
+    \label{fig:training_models}
+\end{figure}
+
+The general performance of the $ 208 $ truck drivers in the freight data set are assessed by removing the environment bias and then averaging the unbiased performance using the method proposed in section \ref{sec:removing_environment_bias}. The metric \textit{miles per gallon over the entire trip} (\textbf{total\_mpg}) is used for the performance evaluation. The results of the truck driver overall performance evaluation and rankings are listed in Appendix \ref{sec:appendix_truck_driver_rankings}, where the truck driver ID, the averaged unbiased \textbf{total\_mpg} along with the standard deviation in brackets are presented.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.5\linewidth]{figures/optimal_placement_example.png}
+    \caption{an example illustration of the the effect by different dimensions of the driver performance characteristics on the performance evaluation with the environmental characteristics fixed as $ s $ presented in Appendix \ref{sec:appendix_test_conditions}, where the joint effect by two dimensions, \textit{the time that engine running over speed threshold} (\textbf{overspeedtime}) and \textit{the maximum speed when engine running over threshold} (\textbf{overspeedmax}), are visualized along with other dimensions fixed as $ a_{0} $ presented in Appendix \ref{sec:appendix_test_conditions}, and \textit{miles per gallon over the entire trip} (\textbf{total\_mpg}) is selected as the performance evaluation metric.}
+    \label{fig:optimal_placement_example}
+\end{figure}
+
+Given the trained baseline model $ V_{\theta} $ and the behavior model $ Q_{\phi} $, the direct behavioral advantage model (network) was constructed as discussed in section \ref{sec:direct_behavioral_advantage}. To illustrate the effect on the outcome value of the trip, driven by different drivers or driving agents characterized by a varying driver behavioral characteristics $ a $ in a given environment characterized by its environmental characteristics $ s $, an example illustration is provided in figure \ref{fig:optimal_placement_example}. In this example, the given environmental characteristics $ s $ is presented in Appendix \ref{sec:appendix_test_conditions} and the values of the driver behavioral characteristics $ a $ except for its \textbf{overspeedtime} and \textbf{overspeedmax} are predefined for simplification. The metric \textbf{total\_mpg} represents the performance evaluation.
+
+In our approach, a gradient-free method, CMA-ES \cite{hansen2001completely}, is used to optimize the conditional driver behavioral characteristics $ a $, in order to find the optimal driver behavioral characteristics $ \tilde{a}^{*} = \arg\max_{a \in \mathcal{A}} A_{\Theta}(s, a) $ constrained in a given trip environment $ s $. The driver $ k $ with averaged behavioral characteristics $\bar{a}_{k} $ that has the minimum euclidean distance to the optimal driver behavioral characteristics $ \tilde{a}^{*} $ is chosen to drive the trip. Formally, the available driver chosen to drive the trip is the driver with identifier
+
+\[
+k^{*} = \arg\max_{k} \| \bar{a}_{k} - \tilde{a}^{*} \|
+\]
+
+And the averaged behavioral characteristics of driver $ k $ is defined as
+
+\[
+\bar{a}_{k} = \frac{1}{ | \mathcal{I}_{k} | } \sum_{i \in \mathcal{I}_{k}} a_{i}
+\]
+
+where $ a_{i} \in \mathcal{A} $ and $ \mathcal{I}_{k} $ is the set of all possible data sample entry indices related to the $k$-th driver.
+
+
+\section{Conclusion}\label{sec:conclusion}
+
+The primary contributions of this work include a generic method in assessing the general performance of a driver or driving agent proposed in section \ref{sec:general_performance_assessment} and a method that incorporates driver behavioral characteristics in section \ref{sec:incorporating_driver_behavioral_characteristics} to approach the optimal driver placement problem. These two methods are applied to a truck freight data set with more than 90,000 records of trips to fairly analyze the performance of truck drivers in terms of overall fuel efficiency of their trips considering the environmental difference when the trip data are collected, and find the truck driver most suitable for a new trip regarding their past records.
+
+The source code\footnote{\url{https://github.com/davidqiu1993/Hackauton2018_DolanWins}} for this work is available to the public.
+
+
+\section*{Acknowledgments}
+
+This work was made possible through the support from AutonLab of Carnegie Mellon University who held the \textit{Hackauton 2018 Machine Learning Hackathon} and the sponsor of the problem and the dataset.
+
+
+\bibliographystyle{unsrt}
+\bibliography{refs}
+
+
+\newpage
+
+
+\begin{appendices}
+
+\section{General Performance Ranking Results of the Truck Drivers}\label{sec:appendix_truck_driver_rankings}
+
+As listed below is the ranking results of the truck driver general performance generated by subtracting the baseline performance from the raw performance evaluation with the metric of \textit{miles per gallon over the entire trip} and averaging the driver behavioral advantage, using the method described in section \ref{sec:removing_environment_bias}. The higher the advantage is, the better the driver performed in general, with estimation error presented in brackets.
+
+\begin{multicols}{3}
+\VerbatimInput[fontsize=\scriptsize]{figures/truck_driver_rankings.txt}
+\end{multicols}
+
+\newpage
+
+\section{Test Conditions for Optimal Driver Placement}\label{sec:appendix_test_conditions}
+
+\begin{Verbatim}[fontsize=\small]
+s = [ 0.43287603  1.16673833  0.          0.          1.          0.
+     -0.28311216 -2.35413651  1.41650827  1.4164645   2.1548913   1.1848586
+      2.49437459  1.60718365  1.20496714  1.20496755  0.81056784  2.2438689
+      0.81056832  2.2438548   1.35917538  0.88847887  0.62507642  1.07587502
+      0.86936209  0.66701179 -0.52474082  3.04497366  0.01570298]
+\end{Verbatim}
+
+\begin{Verbatim}[fontsize=\small]
+a0 = [ 0.59222113  0.31818032  0.4902029   x          -0.32864671  y
+      -0.23821433 -0.31306424  0.28651447 -0.06029843 -0.07660633 -0.61115171
+       0.44149855  1.83023875  0.          0.          0.          0.
+       1.          1.          0.          0.          0.          1.
+       0.          0.          0.          0.          0.          1.
+       0.          0.          0.          1.          0.          0.
+       1.          0.          0.          0.          0.          0.
+       1.          0.          0.          0.          1.          0.
+       0.          1.          0.          0.         -0.5263721  -0.60509878
+       0.43784125  0.41665665  0.50981417  0.50831901  0.6149238   0.62443187
+       0.44167023  0.42748259]
+\end{Verbatim}
+
+
+\end{appendices}
+
+
+\end{document}
